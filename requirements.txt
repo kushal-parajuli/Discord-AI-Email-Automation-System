@@ -1,0 +1,84 @@
+## Prerequisites
+
+Before running this project, ensure the following software and services are installed and configured:
+
+### 1. Python
+
+Install Python 3.10 or later.
+
+Verify installation:
+
+```bash
+python --version
+```
+
+### 2. Docker Desktop
+
+Install Docker Desktop to run n8n locally.
+
+Verify installation:
+
+```bash
+docker --version
+```
+
+### 3. n8n
+
+Run n8n using Docker:
+
+```bash
+docker run -it --name n8n -p 5678:5678 n8nio/n8n
+```
+
+Access n8n:
+
+```text
+http://localhost:5678
+```
+
+### 4. Ollama
+
+Install Ollama from:
+
+https://ollama.com
+
+Download the required model:
+
+```bash
+ollama pull llama3.2
+```
+
+Verify:
+
+```bash
+ollama list
+```
+
+### 5. Discord Bot
+
+Create a Discord Application and Bot from:
+
+https://discord.com/developers/applications
+
+Required:
+
+* Discord Bot Token
+* Message Content Intent Enabled
+* Bot added to a Discord Server
+
+### 6. Gmail SMTP
+
+Configure Gmail SMTP credentials inside n8n.
+
+Required:
+
+* Gmail Account
+* Gmail App Password
+
+SMTP Configuration:
+
+```text
+Host: smtp.gmail.com
+Port: 465
+Security: SSL/TLS
+```
