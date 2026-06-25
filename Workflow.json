@@ -1,0 +1,194 @@
+{
+  "name": "Discord Email Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "57fe4c11-5228-4e60-a168-bb67b0f8cc02",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -544,
+        0
+      ],
+      "id": "48b00f24-88cb-4e95-9fba-632a28efe009",
+      "name": "Webhook",
+      "webhookId": "57fe4c11-5228-4e60-a168-bb67b0f8cc02"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "797efd24-f14d-44a4-b545-9a6dd9384eca",
+              "name": "recipient",
+              "value": "={{$json.body.recipient}}",
+              "type": "string"
+            },
+            {
+              "id": "dc66034e-4a74-4dd2-959c-9f0fbf42bc4c",
+              "name": "topic",
+              "value": "={{$json.body.topic}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -352,
+        0
+      ],
+      "id": "38733903-36d7-4ee9-89e0-eb7f63040972",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Write a professional email.\n\nTopic: {{$json.topic}}\n\nRules:\n- Create an appropriate subject line.\n- Write a complete professional email.\n- Sign the email as \"Kushal Parajuli\".\n- Never use placeholders such as [Deadline], [Date], [Company Name], [Your Name], or similar.\n- If information is missing, write naturally without placeholders.\n- Do not include explanations.\n- Return only the email.\n\nFormat:\n\nSubject: <subject>\n\n<body>",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        -176,
+        0
+      ],
+      "id": "c0d1e82c-8089-428e-92ae-29faf1f62db3",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        -176,
+        160
+      ],
+      "id": "ab2836ce-f67c-4be4-8632-a62f92eb56a2",
+      "name": "Ollama Chat Model2",
+      "credentials": {
+        "ollamaApi": {
+          "id": "Pwx3DjpnV37X09FY",
+          "name": "Ollama account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "hhhe3332@gmail.com",
+        "toEmail": "={{$node[\"Edit Fields\"].json[\"recipient\"]}}",
+        "subject": "={{$json.subject}}",
+        "emailFormat": "text",
+        "text": "={{$json.body}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        432,
+        0
+      ],
+      "id": "f1fc4a86-f80f-4069-931d-2d0e4a83f483",
+      "name": "Send an Email",
+      "webhookId": "0110d3ed-a0d5-4ba4-a292-e866aa5fd71b",
+      "credentials": {
+        "smtp": {
+          "id": "jiLD8gd6BpcTaGkq",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const text = $json.text;\n\nconst lines = text.split('\\n');\n\nlet subject = \"AI Generated Email\";\n\nif (lines[0].startsWith(\"Subject:\")) {\n  subject = lines[0].replace(\"Subject:\", \"\").trim();\n}\n\nconst body = lines.slice(2).join('\\n');\n\nreturn [\n  {\n    subject,\n    body\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        176,
+        0
+      ],
+      "id": "5f89be68-efa8-4c86-8e41-843b356a6810",
+      "name": "Code in JavaScript"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Send an Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "c1ec82e4-a9da-48f9-b925-6b24a8e98a2e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b4dc1cfb4d740e58694d417a51764a491e5362dca50e6aa6cc3cf2204858d698"
+  },
+  "nodeGroups": [],
+  "id": "A05wL0ESOcQvhWOt",
+  "tags": []
+}
